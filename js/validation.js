@@ -13,12 +13,10 @@ export function isNameExist(name) {
 }
 
 export function urlValidation(url) {
-  if (isUrlExist()) return false;
   const regex = new RegExp("^(https?:\\/\\/)");
   return regex.test(url);
 }
 export function nameValidation(name) {
-  if (isNameExist()) return false;
   const regex = new RegExp("^[^\\s][\\s\\S]{1,14}$");
   return regex.test(name);
 }

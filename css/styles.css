@@ -478,5 +478,19 @@ header h1 {
   border-radius: 10px;
 }
 
+@media (max-width: 576px) {
+  .success-modal p {
+    font-size: 0.875rem;
+    padding-bottom: 3rem;
+  }
+
+  .success-modal i {
+    font-size: 3rem;
+  }
+
+  .success-modal .modal-content {
+    padding: 1rem 0.5rem;
+  }
+}
 /*end success modal*/
 /* end modals */

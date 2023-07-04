@@ -1,6 +1,12 @@
 "use strict";
 
-import { siteName, siteUrl, updateName, successModal } from "./globalVars.js";
+import {
+  siteName,
+  siteUrl,
+  updateName,
+  successModal,
+  updateUrl,
+} from "./globalVars.js";
 import { bookmarksArrayList, displayBookmarks } from "./crudOperations.js";
 import { bookmarksContainer } from "./globalVars.js";
 import {
@@ -121,7 +127,7 @@ export function checkValidation({ name, url, nameError, urlError }) {
     showElement(nameError, "d-block");
     return false;
   }
-  if (isUrlExist(siteUrl) && name !== updateName.value) {
+  if (isUrlExist(url) && url !== updateUrl.value) {
     urlError.innerHTML = "Sorry this url is already exists";
     showElement(urlError, "d-block");
     return false;
