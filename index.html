@@ -47,26 +47,25 @@
       </g>
    </svg>
 
-
    <header>
       <div class="container">
-         <h1 class="text-center">Bookmarker </h1>
+         <h1 class="text-center">Bookmarker</h1>
       </div>
    </header>
 
-   <main id="content">
+   <main>
       <section>
          <div class="container">
             <div class="input-area">
                <div class="site-name">
                   <label for="siteName">Site Name</label>
-                  <input type="text" class="" placeholder="Bookmark Name" id="siteName">
-                  <span id="nameError">Name is required</span>
+                  <input type="text" placeholder="Bookmark Name" id="siteName">
+                  <span id="nameError" class="d-none">Name is required</span>
                </div>
                <div class="site-url">
-                  <label for="siteUrl" class="fw-bold">Site URL</label>
-                  <input type="text" class="form-control mb-4" placeholder="Website URL" id="siteUrl">
-                  <span id="urlError">URL is required</span>
+                  <label for="siteUrl">Site URL</label>
+                  <input type="text" placeholder="Website URL" id="siteUrl">
+                  <span id="urlError" class="d-none">URL is required</span>
                </div>
                <button class="btn-submit" id="btnSubmit">Add Bookmark</button>
             </div>
@@ -87,16 +86,13 @@
                   <div class="table-cell">Action</div>
                </div>
                <div class="bookmarks-data" id="bookmarksData">
-
                </div>
-
             </div>
          </div>
-
       </div>
    </section>
 
-   <div class="update-modal d-none" id="updateModal">
+   <div class="update-modal" id="updateModal">
       <div class="modal-content">
          <div class="modal-header">
             <h3> Update Bookmark</h3>
@@ -104,7 +100,9 @@
          </div>
          <div class="modal-body">
             <input type="text" class="" placeholder="Update Bookmark Name" id="updateName">
-            <input type="text" class="form-control mb-4" placeholder="Update URL" id="updateUrl">
+            <span id="updateNameError" class="d-none">Name is required</span>
+            <input type="text" placeholder="Update URL" id="updateUrl">
+            <span id="updateUrlError" class="d-none">URL is required</span>
          </div>
          <div class="modal-footer">
             <button class="btn-update-modal" id="btnConfirmUpdate">Update</button>
@@ -112,7 +110,7 @@
       </div>
    </div>
 
-   <div class="delete-modal d-none" id="deleteModal">
+   <div class="delete-modal" id="deleteModal">
       <div class="modal-content">
          <div class="modal-header">
             <i id="btnCloseDelete" class="fa-solid fa-circle-xmark close-icon"></i>
@@ -128,10 +126,16 @@
          </div>
       </div>
    </div>
+
+   <div class="success-modal" id="successModal">
+      <div class="modal-content">
+         <p class="success-caption"></p>
+         <i class="fa-solid fa-circle-check fa-bounce"></i>
+      </div>
    </div>
    <footer>
       <div class="container py-3">
-         <p>&copy; 2023 Bookmarker By <span>Mohamed Ahmed</span>. All rights reserved.</p>
+         <p>&copy; 2023 Bookmarker By <span>Mohamed Ahmed</span>. </p>
       </div>
    </footer>
 

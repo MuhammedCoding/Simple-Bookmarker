@@ -1,17 +1,23 @@
 "use strict";
 
-import { bookmarksContainer } from "./globalVars.js";
+import {
+  bookmarksContainer,
+  siteName,
+  siteUrl,
+  updateName,
+  updateUrl,
+} from "./globalVars.js";
 import {
   setLocalStorage,
   createElemBookmark,
   getLocalStorage,
-  getUpdates,
   clearInput,
 } from "./utilities.js";
+import { nameValidation, urlValidation } from "./validation.js";
 
 export let bookmarksArrayList = [];
-/* Start Crud Operations*/
 
+/*Start Crud Operations*/
 export function createBookmark() {
   let bookmark = {
     name: siteName.value,
@@ -27,9 +33,8 @@ export function displayBookmarks(bookmarksArray = bookmarksArrayList) {
   bookmarksContainer.innerHTML = "";
   for (let i = 0; i < bookmarksArray.length; i++) {
     const bookmark = bookmarksArray[i];
-    createElemBookmark(bookmark);
+    createElemBookmark(bookmark, i);
   }
-  getUpdates();
 }
 
 export function deleteBookmark(deleteIndex) {
@@ -44,6 +49,7 @@ export function updateBookmark(index) {
   setLocalStorage();
   displayBookmarks();
 }
+/* End Crud Operations */
 
 export function onstart() {
   if (getLocalStorage() !== null) {
@@ -51,5 +57,3 @@ export function onstart() {
     displayBookmarks();
   }
 }
-
-/* End Crud Operations */

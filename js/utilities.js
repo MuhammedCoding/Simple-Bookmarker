@@ -1,9 +1,14 @@
 "use strict";
 
-import { siteName, siteUrl } from "./globalVars.js";
+import { siteName, siteUrl, updateName, successModal } from "./globalVars.js";
 import { bookmarksArrayList, displayBookmarks } from "./crudOperations.js";
 import { bookmarksContainer } from "./globalVars.js";
-import { deleteClick, updateClick } from "./events.js";
+import {
+  isNameExist,
+  isUrlExist,
+  nameValidation,
+  urlValidation,
+} from "./validation.js";
 
 // setters and getters for local storage
 export function setLocalStorage() {
@@ -21,7 +26,7 @@ export function clearInput() {
 }
 
 //DOM elements creation
-export function createElemBookmark(bookmark) {
+export function createElemBookmark(bookmark, index) {
   const row = document.createElement("div");
   row.className = "row";
   const nameCell = document.createElement("div");
@@ -39,8 +44,10 @@ export function createElemBookmark(bookmark) {
   row.appendChild(actionsCell);
 
   const visitLink = document.createElement("a");
-  visitLink.href = bookmark.siteUrl;
+  visitLink.href = bookmark.url;
+  visitLink.target = "_blank";
   visitLink.className = "visit-link";
+  visitLink.title = "go to link";
   actionsCell.appendChild(visitLink);
 
   const visitIcon = document.createElement("i");
@@ -49,6 +56,7 @@ export function createElemBookmark(bookmark) {
 
   const updateButton = document.createElement("button");
   updateButton.className = "btn-update btnShowUpdateModal";
+  updateButton.title = "update bookmark";
   actionsCell.appendChild(updateButton);
 
   const updateIcon = document.createElement("i");
@@ -57,24 +65,31 @@ export function createElemBookmark(bookmark) {
 
   const deleteButton = document.createElement("button");
   deleteButton.className = "btnShowDeleteModal btn-delete";
+  deleteButton.title = "delete bookmark";
   actionsCell.appendChild(deleteButton);
 
   const deleteIcon = document.createElement("i");
   deleteIcon.className = "fa-solid fa-trash";
   deleteButton.appendChild(deleteIcon);
-
+  updateButton.dataset.index = index;
+  deleteButton.dataset.index = index;
   bookmarksContainer.appendChild(row);
 }
 
-export function getUpdates() {
-  const btnShowDeleteModal = document.querySelectorAll(".btnShowDeleteModal");
-  const btnShowUpdateModal = document.querySelectorAll(".btnShowUpdateModal");
-  deleteClick(btnShowDeleteModal);
-  updateClick(btnShowUpdateModal);
+function hideElement(element, displayType = "d-flex") {
+  element.classList.replace(displayType, "d-none");
+}
+function showElement(element, displayType = "d-flex") {
+  element.classList.replace("d-none", displayType);
 }
 
-export function closeModal(modal) {
-  modal.classList.replace("d-flex", "d-none");
+export function showModal(modal) {
+  console.log("yes");
+  modal.classList.add("show-modal");
+}
+
+export function hideModal(modal) {
+  modal.classList.remove("show-modal");
 }
 
 export function searchBookmark(bookmarkName) {
@@ -88,4 +103,49 @@ export function searchBookmark(bookmarkName) {
       matchedBookmarksArrayList.push(bookmarksArrayList[i]);
   }
   displayBookmarks(matchedBookmarksArrayList);
+}
+
+export function clearErrors(nameErrorField, urlErrorField) {
+  if (nameErrorField.classList.contains("d-block"))
+    hideElement(nameErrorField, "d-block");
+
+  if (urlErrorField.classList.contains("d-block"))
+    hideElement(urlErrorField, "d-block");
+}
+
+export function checkValidation({ name, url, nameError, urlError }) {
+  clearErrors(nameError, urlError);
+
+  if (isNameExist(name) && name !== updateName.value) {
+    nameError.innerHTML = "Sorry this name is already exists";
+    showElement(nameError, "d-block");
+    return false;
+  }
+  if (isUrlExist(siteUrl) && name !== updateName.value) {
+    urlError.innerHTML = "Sorry this url is already exists";
+    showElement(urlError, "d-block");
+    return false;
+  }
+
+  if (!nameValidation(name)) {
+    nameError.innerHTML = "Please enter a valid name";
+    showElement(nameError, "d-block");
+    return false;
+  }
+  if (!urlValidation(url)) {
+    urlError.innerHTML = "Please enter a valid URL";
+    showElement(urlError, "d-block");
+    return false;
+  }
+
+  return true;
+}
+
+export function successModalCall(msg) {
+  showModal(successModal);
+  const pTag = successModal.getElementsByTagName("p")[0];
+  pTag.textContent = msg;
+  setTimeout(() => {
+    hideModal(successModal);
+  }, 3000);
 }

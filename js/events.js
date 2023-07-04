@@ -1,5 +1,3 @@
-"use strict";
-
 import {
   bookmarksArrayList,
   deleteBookmark,
@@ -18,115 +16,139 @@ import {
   btnCloseDelete,
   btnCancelDelete,
   searchInput,
+  bookmarksContainer,
+  siteName,
+  siteUrl,
+  nameError,
+  urlError,
+  updateNameError,
+  updateUrlError,
+  successModal,
 } from "./globalVars.js";
-import { closeModal, searchBookmark } from "./utilities.js";
+import {
+  checkValidation,
+  searchBookmark,
+  clearErrors,
+  showModal,
+  hideModal,
+  successModalCall,
+} from "./utilities.js";
 
 let updateIndex = 0;
-
-//mechanism that happen on clicking on add bookmark button
-btnSubmit.addEventListener("click", createBookmark);
-let deleteListeners = [];
 let deleteIndex;
 
-export function deleteClick(btnShowDeleteModal) {
-  // Remove old listeners
-  for (let i = 0; i < btnShowDeleteModal.length; i++) {
-    const oldListener = deleteListeners[i];
-    if (oldListener) {
-      btnShowDeleteModal[i].removeEventListener("click", oldListener);
+//mechanism that happen on clicking on add bookmark button
+btnSubmit.addEventListener("click", function () {
+  const validationObject = {
+    name: siteName.value,
+    url: siteUrl.value,
+    nameError: nameError,
+    urlError: urlError,
+  };
+
+  if (checkValidation(validationObject)) {
+    createBookmark();
+    successModalCall("Bookmark has been added successfully!! 🎉");
+  }
+});
+
+//mechanism happen on deleting a bookmark
+bookmarksContainer.addEventListener("click", function (e) {
+  let target = e.target;
+  while (target != null) {
+    if (target.matches(".btnShowDeleteModal")) {
+      showModal(deleteModal);
+      deleteIndex = target.dataset.index;
+      break;
     }
+    target = target.parentElement;
   }
-
-  // Reset the listeners array
-  deleteListeners = [];
-
-  // Add new listeners
-  for (let i = 0; i < btnShowDeleteModal.length; i++) {
-    const newListener = function (e) {
-      deleteModal.classList.replace("d-none", "d-flex");
-      const bookmarkName =
-        btnShowDeleteModal[i].parentElement.parentElement.firstChild
-          .textContent;
-      const bookMarkIndex = bookmarksArrayList.findIndex(
-        (bookmark) => bookmark.name === bookmarkName
-      );
-      deleteIndex = bookMarkIndex;
-    };
-    btnShowDeleteModal[i].addEventListener("click", newListener);
-
-    // Store the new listener so it can be removed later
-    deleteListeners.push(newListener);
-  }
-}
+});
 
 btnConfirmDelete.addEventListener("click", function () {
-  console.log(deleteIndex);
   deleteBookmark(deleteIndex);
-  deleteModal.classList.replace("d-flex", "d-none");
+  hideModal(deleteModal);
+  successModalCall("Bookmark deleted successfully!");
 });
 
-// mechanism that happen on clicking on update icon
-export function updateClick(btnShowUpdateModal) {
-  for (let i = 0; i < btnShowUpdateModal.length; i++) {
-    btnShowUpdateModal[i].addEventListener("click", function (e) {
-      updateModal.classList.replace("d-none", "d-flex");
-
-      const bookmarkName =
-        btnShowUpdateModal[i].parentElement.parentElement.firstChild
-          .textContent;
-      const bookMarkIndex = bookmarksArrayList.findIndex(
-        (bookmark) => bookmark.name === bookmarkName
-      );
-
-      updateName.value = bookmarksArrayList[bookMarkIndex].name;
-      updateUrl.value = bookmarksArrayList[bookMarkIndex].url;
-      updateIndex = bookMarkIndex;
-    });
+//mechanism happen on updating a bookmark
+bookmarksContainer.addEventListener("click", function (e) {
+  let target = e.target;
+  while (target != null) {
+    if (target.matches(".btnShowUpdateModal")) {
+      showModal(updateModal);
+      clearErrors(updateNameError, updateUrlError);
+      updateIndex = target.dataset.index;
+      updateName.value = bookmarksArrayList[updateIndex].name;
+      updateUrl.value = bookmarksArrayList[updateIndex].url;
+      break;
+    }
+    target = target.parentElement;
   }
-  btnConfirmUpdate.addEventListener("click", function () {
-    updateBookmark(updateIndex);
-    updateModal.classList.replace("d-flex", "d-none");
-  });
-}
-
-// mechanism for pressing on modals of update and delete
-btnCloseUpdate.addEventListener("click", function () {
-  closeModal(updateModal);
 });
 
+btnConfirmUpdate.addEventListener("click", function () {
+  const validationObject = {
+    name: updateName.value,
+    url: updateUrl.value,
+    nameError: updateNameError,
+    urlError: updateUrlError,
+  };
+
+  if (checkValidation(validationObject)) {
+    hideModal(updateModal);
+    updateBookmark(updateIndex);
+    successModalCall("Bookmark updated successfully!");
+  }
+});
+
+// mechanism for pressing on modals icons of update and delete
+
+//on clicking on close updateModal button
+btnCloseUpdate.addEventListener("click", function () {
+  hideModal(updateModal);
+});
+
+//on pressing escape btn
 document.addEventListener("keydown", function (e) {
   if (e.key === "Escape") {
-    if (!updateModal.classList.contains("d-none")) closeModal(updateModal);
-    else if (!deleteModal.classList.contains("d-none")) closeModal(deleteModal);
+    if (updateModal.classList.contains("show-modal")) hideModal(updateModal);
+    else if (deleteModal.classList.contains("show-modal"))
+      hideModal(deleteModal);
   }
 });
 
+//on pressing outside of updateModal container
 updateModal.addEventListener("click", function (e) {
   if (
-    !updateModal.classList.contains("d-none") &&
+    updateModal.classList.contains("show-modal") &&
     e.target.classList.contains("update-modal")
   )
-    closeModal(updateModal);
+    hideModal(updateModal);
 });
 
+//on pressing outside of deleteModal container
 deleteModal.addEventListener("click", function (e) {
-  //console.log(e.target);
   if (
-    !deleteModal.classList.contains("d-none") &&
+    deleteModal.classList.contains("show-modal") &&
     e.target.classList.contains("delete-modal")
   )
-    closeModal(deleteModal);
+    hideModal(deleteModal);
 });
 
+//on clicking on close DeleteModal button
 btnCloseDelete.addEventListener("click", function () {
-  closeModal(deleteModal);
+  hideModal(deleteModal);
 });
 
+// on clicking on cancel delete button
 btnCancelDelete.addEventListener("click", function () {
-  closeModal(deleteModal);
+  hideModal(deleteModal);
 });
 
+// finish events happen on clicking on modals
+
+//real-time search for bookmarks data
 searchInput.addEventListener("input", function () {
   searchBookmark(this.value);
-  console.log(this.value);
 });
